@@ -1,0 +1,27 @@
+{
+  "name": "polivia-server",
+  "version": "1.0.0",
+  "description": "Polivia Backend Server",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build required for serverless'",
+    "deploy": "vercel --prod",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "polivia",
+    "trivia",
+    "hebrew",
+    "serverless"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.54.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.7.2"
+  }
+}
