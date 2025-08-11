@@ -39,17 +39,19 @@ export default async function handler(req, res) {
 
     if (dailyError || !dailyQuestion) {
       // No question selected for today, pick a random one
-      const { data: randomQuestion, error: randomError } = await supabase
+      // First get all active questions, then pick one randomly
+      const { data: allQuestions, error: questionsError } = await supabase
         .from('questions_pool')
         .select('*')
-        .eq('is_active', true)
-        .order('random()')
-        .limit(1)
-        .single();
+        .eq('is_active', true);
 
-      if (randomError || !randomQuestion) {
+      if (questionsError || !allQuestions || allQuestions.length === 0) {
         return res.status(404).json({ error: 'No questions available' });
       }
+
+      // Pick a random question from the array
+      const randomIndex = Math.floor(Math.random() * allQuestions.length);
+      const randomQuestion = allQuestions[randomIndex];
 
       // Try to save today's selection (handle race condition)
       const { error: insertError } = await supabase
