@@ -1,6 +1,6 @@
 // api/admin/questions.js
 // 🗄️ Database Management API for Questions Pool
-import { supabaseService as supabase } from '../../lib/supabase.js';
+import { supabaseService as supabase } from '../../../lib/supabase.js';
 
 export default async function handler(req, res) {
   // CORS headers
