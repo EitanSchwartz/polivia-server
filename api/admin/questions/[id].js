@@ -97,6 +97,9 @@ async function updateQuestion(req, res, id) {
     isActive 
   } = req.body;
 
+  console.log('Update request - ID from URL:', id);
+  console.log('Update request - Body:', JSON.stringify(req.body, null, 2));
+
   // Validation
   if (!questionText || !answers || correctAnswerIndex === undefined || !category || !difficulty) {
     return res.status(400).json({ 

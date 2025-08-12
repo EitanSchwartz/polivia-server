@@ -106,6 +106,8 @@ async function createQuestion(req, res) {
     isActive = true 
   } = req.body;
 
+  console.log('Create request - Body:', JSON.stringify(req.body, null, 2));
+
   // Validation
   if (!questionText || !answers || correctAnswerIndex === undefined || !category || !difficulty) {
     return res.status(400).json({ 
