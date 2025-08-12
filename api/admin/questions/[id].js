@@ -206,9 +206,18 @@ async function deleteQuestion(req, res, id) {
 
   } catch (error) {
     console.error('Error deleting question:', error);
+    
+    // Check if it's a foreign key constraint error
+    if (error.code === '23503' || error.message?.includes('violates foreign key constraint')) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Cannot delete question because it is referenced by existing game data. Please delete related records first.' 
+      });
+    }
+    
     res.status(500).json({ 
       success: false,
-      message: 'Failed to delete question' 
+      message: `Failed to delete question: ${error.message || 'Unknown error'}` 
     });
   }
 }
