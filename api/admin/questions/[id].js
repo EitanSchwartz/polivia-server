@@ -183,7 +183,37 @@ async function updateQuestion(req, res, id) {
  * 🗑️ DELETE /api/admin/questions/[id] - Delete question by ID
  */
 async function deleteQuestion(req, res, id) {
+  const { force } = req.query; // Allow ?force=true for cascading delete
+  
   try {
+    // If force delete is requested, delete related records first
+    if (force === 'true') {
+      console.log(`Force deleting question ${id} with cascading delete...`);
+      
+      // Delete from daily_scores first
+      try {
+        await supabase
+          .from('daily_scores')
+          .delete()
+          .eq('question_id', id);
+        console.log('Deleted related daily_scores records');
+      } catch (error) {
+        console.log('No daily_scores to delete or error:', error.message);
+      }
+
+      // Delete from daily_questions 
+      try {
+        await supabase
+          .from('daily_questions')
+          .delete()
+          .eq('question_id', id);
+        console.log('Deleted related daily_questions records');
+      } catch (error) {
+        console.log('No daily_questions to delete or error:', error.message);
+      }
+    }
+
+    // Now delete the question itself
     const { data, error } = await supabase
       .from('questions_pool')
       .delete()
@@ -204,7 +234,9 @@ async function deleteQuestion(req, res, id) {
 
     res.status(200).json({
       success: true,
-      message: 'Question deleted successfully'
+      message: force === 'true' 
+        ? 'Question and all related records deleted successfully'
+        : 'Question deleted successfully'
     });
 
   } catch (error) {
@@ -214,7 +246,8 @@ async function deleteQuestion(req, res, id) {
     if (error.code === '23503' || error.message?.includes('violates foreign key constraint')) {
       return res.status(400).json({ 
         success: false,
-        message: 'Cannot delete question because it is referenced by existing game data. Please delete related records first.' 
+        message: 'Cannot delete question because it is referenced by existing game data. Use force=true parameter to delete all related data, or deactivate the question instead.',
+        canForceDelete: true
       });
     }
     
